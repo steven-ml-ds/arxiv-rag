@@ -1,0 +1,37 @@
+[project]
+name = "arxiv-rag"
+version = "0.1.0"
+description = "Personal RAG chatbot over arXiv AI/ML papers"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pydantic-settings>=2.6",
+    "anthropic>=0.40",
+    "chromadb>=0.5.20",
+    "sentence-transformers>=3.3",
+    "arxiv>=2.1",
+    "pypdf>=5.1",
+    "numpy>=2.0",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "pytest-cov>=6.0",
+    "httpx>=0.27",
+    "ruff>=0.8",
+]
+
+[tool.setuptools.packages.find]
+include = ["app*", "pipeline*"]
+exclude = ["tests*", "data*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
