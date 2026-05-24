@@ -17,31 +17,33 @@ def test_paper_dataclass_fields():
 
 
 def test_fetch_recent_papers_downloads_pdfs(tmp_path):
-    """Mocks arxiv.Search; verifies PDF downloads land in pdf_dir."""
+    """Mocks arxiv.Client and the urllib download; verifies PDFs land in pdf_dir."""
     fake_result = MagicMock()
     fake_result.entry_id = "http://arxiv.org/abs/2401.12345v1"
     fake_result.title = "Test Title"
-    fake_result.authors = [MagicMock(name="A1"), MagicMock(name="A2")]
+    fake_result.authors = [MagicMock(), MagicMock()]
     fake_result.authors[0].name = "Alice"
     fake_result.authors[1].name = "Bob"
     fake_result.published.year = 2024
 
-    def fake_download(dirpath: str, filename: str):
-        out = Path(dirpath) / filename
-        out.write_bytes(b"%PDF-1.4 stub")
-        return str(out)
+    # arxiv 4.x: PDF URL is on Result.links
+    pdf_link = MagicMock()
+    pdf_link.title = "pdf"
+    pdf_link.content_type = "application/pdf"
+    pdf_link.href = "https://arxiv.org/pdf/2401.12345v1"
+    fake_result.links = [pdf_link]
 
-    fake_result.download_pdf = fake_download
+    def fake_download(url: str, dest: Path):
+        dest.write_bytes(b"%PDF-1.4 stub")
 
-    with patch("pipeline.fetch_arxiv.arxiv.Search") as mock_search:
-        mock_search.return_value.results.return_value = iter([fake_result])
-        with patch("pipeline.fetch_arxiv.arxiv.Client") as mock_client:
-            mock_client.return_value.results.return_value = iter([fake_result])
-            papers = fetch_recent_papers(
-                categories=["cs.LG"],
-                max_papers=1,
-                pdf_dir=tmp_path,
-            )
+    with patch("pipeline.fetch_arxiv.arxiv.Client") as mock_client, \
+         patch("pipeline.fetch_arxiv._download", side_effect=fake_download):
+        mock_client.return_value.results.return_value = iter([fake_result])
+        papers = fetch_recent_papers(
+            categories=["cs.LG"],
+            max_papers=1,
+            pdf_dir=tmp_path,
+        )
 
     assert len(papers) == 1
     assert papers[0].arxiv_id == "2401.12345"

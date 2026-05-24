@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -19,6 +20,25 @@ def _arxiv_id_from_entry_id(entry_id: str) -> str:
     """Convert 'http://arxiv.org/abs/2401.12345v1' → '2401.12345'."""
     raw = entry_id.rsplit("/", 1)[-1]
     return raw.split("v")[0]
+
+
+def _pdf_url(result) -> str | None:
+    """arxiv 4.x: dig the PDF URL out of result.links."""
+    for link in result.links:
+        if link.title == "pdf" or (link.content_type == "application/pdf"):
+            return link.href
+    return None
+
+
+def _download(url: str, dest: Path) -> None:
+    """Stream-download a URL to disk."""
+    req = urllib.request.Request(url, headers={"User-Agent": "arxiv-rag/0.1"})
+    with urllib.request.urlopen(req, timeout=60) as resp, open(dest, "wb") as f:
+        while True:
+            chunk = resp.read(64 * 1024)
+            if not chunk:
+                break
+            f.write(chunk)
 
 
 def fetch_recent_papers(
@@ -44,10 +64,12 @@ def fetch_recent_papers(
     papers: list[Paper] = []
     for result in client.results(search):
         arxiv_id = _arxiv_id_from_entry_id(result.entry_id)
-        filename = f"{arxiv_id}.pdf"
-        target = pdf_dir / filename
+        target = pdf_dir / f"{arxiv_id}.pdf"
         if not target.exists():
-            result.download_pdf(dirpath=str(pdf_dir), filename=filename)
+            url = _pdf_url(result)
+            if url is None:
+                continue  # paper has no PDF link; skip
+            _download(url, target)
         papers.append(
             Paper(
                 arxiv_id=arxiv_id,
