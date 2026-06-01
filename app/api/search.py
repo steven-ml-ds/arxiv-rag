@@ -1,15 +1,12 @@
 from __future__ import annotations
 
-from functools import lru_cache
 from typing import Any
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 
-from app.config import get_settings
+from app.api.deps import get_retriever
 from app.rag.retriever import Retriever
-from app.stores.vector_store import VectorStore
-from pipeline.embed import Embedder
 
 router = APIRouter()
 
@@ -42,21 +39,6 @@ class SearchResponse(BaseModel):
     results: list[ArticleResult]
 
 
-@lru_cache(maxsize=1)
-def _embedder() -> Embedder:
-    return Embedder(get_settings().embedding_model)
-
-
-@lru_cache(maxsize=1)
-def _vector_store() -> VectorStore:
-    s = get_settings()
-    return VectorStore(path=s.chroma_path, collection=s.chroma_collection)
-
-
-def get_retriever() -> Retriever:
-    return Retriever(embedder=_embedder(), store=_vector_store())
-
-
 def _snippet(document: str) -> str:
     text = " ".join(document.split())
     if len(text) <= SNIPPET_LENGTH:
@@ -87,7 +69,7 @@ def group_chunks_by_article(
         matched_chunks = [
             MatchedChunk(
                 chunk_id=str(chunk.get("id", "")),
-                chunk_index=int((chunk.get("metadata") or {}).get("chunk_index", 0)),
+                chunk_index=int((chunk.get("metadata") or {}).get("chunk_index") or 0),
                 snippet=_snippet(str(chunk.get("document", ""))),
                 distance=float(chunk.get("distance", 1.0)),
             )
