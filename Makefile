@@ -7,7 +7,7 @@ test:
 	uv run pytest
 
 pipeline:
-	uv run python -m pipeline.run_pipeline --max-papers 10
+	uv run python -m pipeline.run_pipeline --max-papers 150
 
 serve:
 	uv run uvicorn app.main:app --reload --port 8000
