@@ -19,7 +19,7 @@ log = logging.getLogger("pipeline")
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Ingest arXiv papers into ChromaDB.")
-    parser.add_argument("--max-papers", type=int, default=10)
+    parser.add_argument("--max-papers", type=int, default=150)
     parser.add_argument(
         "--categories", nargs="+", default=["cs.LG", "cs.AI", "cs.CL"]
     )
