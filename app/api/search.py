@@ -97,5 +97,11 @@ def search(
     req: SearchRequest,
     retriever: Retriever = Depends(get_retriever),
 ) -> SearchResponse:
-    chunks = retriever.retrieve(req.q, top_k=req.top_k * 3)
+    # /search does its own per-article grouping and shows up to
+    # MAX_MATCHED_CHUNKS snippets per paper, so it must allow that many chunks
+    # per arxiv_id through the retriever's diversity cap (whose default of 2 is
+    # tuned for /chat, not search).
+    chunks = retriever.retrieve(
+        req.q, top_k=req.top_k * 3, max_per_paper=MAX_MATCHED_CHUNKS
+    )
     return SearchResponse(results=group_chunks_by_article(chunks, top_k=req.top_k))
