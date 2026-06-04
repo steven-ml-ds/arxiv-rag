@@ -84,7 +84,11 @@ def test_search_fetches_extra_chunks_before_grouping(client):
     r = client.post("/search", json={"q": "flashattention", "top_k": 2})
 
     assert r.status_code == 200
-    client.fake_retriever.retrieve.assert_called_once_with("flashattention", top_k=6)
+    from app.api.search import MAX_MATCHED_CHUNKS
+
+    client.fake_retriever.retrieve.assert_called_once_with(
+        "flashattention", top_k=6, max_per_paper=MAX_MATCHED_CHUNKS
+    )
 
 
 def test_search_orders_articles_by_best_distance(client):
@@ -151,3 +155,50 @@ def test_search_rejects_empty_query(client):
     r = client.post("/search", json={"q": ""})
 
     assert r.status_code == 422
+
+
+def test_search_allows_three_chunks_per_article_through_real_retriever(monkeypatch):
+    """Regression for the per-paper dedup interaction.
+
+    Drives the REAL Retriever (not a mocked .retrieve) so the diversity cap is
+    actually exercised. The store returns 5 chunks from one paper; /search must
+    still surface MAX_MATCHED_CHUNKS (3) of them. Under the bare retriever
+    default (max_per_paper=2) this would collapse to 2.
+    """
+    import numpy as np
+
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-test")
+    from app import main
+    from app.api import search as search_api
+    from app.rag.retriever import Retriever
+
+    fake_store = MagicMock()
+    fake_store.query.return_value = [
+        {
+            "id": f"arxiv_2401.00001_chunk_{i}",
+            "document": f"chunk {i}",
+            "metadata": {
+                "arxiv_id": "2401.00001",
+                "title": "FlashAttention",
+                "authors": "Tri Dao",
+                "year": 2022,
+                "chunk_index": i,
+            },
+            "distance": i / 100,
+        }
+        for i in range(5)
+    ]
+    fake_embedder = MagicMock()
+    fake_embedder.embed_query.return_value = np.zeros(1024, dtype=np.float32)
+    real_retriever = Retriever(embedder=fake_embedder, store=fake_store)
+
+    main.app.dependency_overrides[search_api.get_retriever] = lambda: real_retriever
+    try:
+        with TestClient(main.app) as c:
+            r = c.post("/search", json={"q": "flashattention", "top_k": 5})
+        assert r.status_code == 200
+        results = r.json()["results"]
+        assert len(results) == 1
+        assert len(results[0]["matched_chunks"]) == 3
+    finally:
+        main.app.dependency_overrides.clear()
