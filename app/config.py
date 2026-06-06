@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     chroma_path: str = "data/chroma"
     chroma_collection: str = "papers"
     keyword_db_path: str = "data/keywords.db"
+    reranker_model: str = "BAAI/bge-reranker-base"
     pdf_dir: str = "data/pdfs"
 
 

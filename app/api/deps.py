@@ -6,6 +6,7 @@ from anthropic import Anthropic
 
 from app.config import get_settings
 from app.rag.generator import Generator
+from app.rag.reranker import Reranker
 from app.rag.retriever import Retriever
 from app.stores.keyword_store import KeywordStore
 from app.stores.vector_store import VectorStore
@@ -34,11 +35,17 @@ def _keyword_store() -> KeywordStore:
     return KeywordStore(get_settings().keyword_db_path)
 
 
+@lru_cache(maxsize=1)
+def _reranker() -> Reranker:
+    return Reranker(get_settings().reranker_model)
+
+
 def get_retriever() -> Retriever:
     return Retriever(
         embedder=_embedder(),
         store=_vector_store(),
         keyword_store=_keyword_store(),
+        reranker=_reranker(),
     )
 
 
