@@ -53,3 +53,10 @@ def test_chat_returns_answer_and_sources(client):
 def test_chat_rejects_empty_query(client):
     r = client.post("/chat", json={"q": ""})
     assert r.status_code == 422
+
+
+def test_root_serves_html(client):
+    r = client.get("/")
+    assert r.status_code == 200
+    assert r.headers["content-type"].startswith("text/html")
+    assert "arxiv-rag" in r.text.lower()
