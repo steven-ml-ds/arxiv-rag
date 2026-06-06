@@ -44,7 +44,13 @@ class Generator:
         resp = self.client.messages.create(
             model=self.model,
             max_tokens=self.max_tokens,
-            system=SYSTEM_PROMPT,
+            system=[
+                {
+                    "type": "text",
+                    "text": SYSTEM_PROMPT,
+                    "cache_control": {"type": "ephemeral"},
+                }
+            ],
             messages=[{"role": "user", "content": user_content}],
         )
         return resp.content[0].text
