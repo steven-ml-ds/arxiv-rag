@@ -6,8 +6,9 @@ import sys
 from pathlib import Path
 
 from app.config import get_settings
+from app.stores.keyword_store import KeywordStore
 from app.stores.vector_store import VectorStore
-from pipeline.chunk import chunk_text
+from pipeline.chunk import chunk_sections
 from pipeline.embed import Embedder
 from pipeline.fetch_arxiv import fetch_recent_papers
 from pipeline.index import index_paper
@@ -30,6 +31,7 @@ def main() -> int:
     settings = get_settings()
     embedder = Embedder(settings.embedding_model)
     store = VectorStore(path=settings.chroma_path, collection=settings.chroma_collection)
+    keyword_store = KeywordStore(settings.keyword_db_path)
 
     log.info("Fetching up to %d papers from %s", args.max_papers, args.categories)
     papers = fetch_recent_papers(
@@ -48,9 +50,13 @@ def main() -> int:
                 log.warning("Empty text for %s; skipping", paper.arxiv_id)
                 skipped += 1
                 continue
-            chunks = chunk_text(text, size=args.chunk_size, overlap=args.chunk_overlap)
-            embeddings = embedder.embed_texts(chunks).tolist()
-            index_paper(paper, chunks, embeddings, store)
+            chunks = chunk_sections(text, size=args.chunk_size, overlap=args.chunk_overlap)
+            if not chunks:
+                log.warning("No chunks for %s; skipping", paper.arxiv_id)
+                skipped += 1
+                continue
+            embeddings = embedder.embed_texts([c.text for c in chunks]).tolist()
+            index_paper(paper, chunks, embeddings, store, keyword_store=keyword_store)
             indexed += 1
             log.info("Indexed %s (%d chunks)", paper.arxiv_id, len(chunks))
         except Exception as e:  # noqa: BLE001 — top-level catch is intentional
