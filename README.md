@@ -18,6 +18,3 @@ curl -X POST localhost:8000/chat \
   -H "Content-Type: application/json" \
   -d '{"q": "What is FlashAttention?"}'
 ```
-
-See `/Users/yun/.claude/plans/rag-chatbot-user-ask-concurrent-scroll.md` for the master plan
-and `/Users/yun/.claude/plans/rag-chatbot-m1-walking-skeleton.md` for M1 details.
