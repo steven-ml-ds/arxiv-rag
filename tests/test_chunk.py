@@ -1,4 +1,4 @@
-from pipeline.chunk import chunk_text
+from pipeline.chunk import Chunk, chunk_sections, chunk_text, split_sections
 
 
 def test_short_text_returns_single_chunk():
@@ -25,8 +25,6 @@ def test_overlap_must_be_smaller_than_size():
 def test_empty_input_returns_empty():
     assert chunk_text("", size=100, overlap=10) == []
 
-
-from pipeline.chunk import Chunk, chunk_sections, split_sections
 
 
 def test_split_sections_detects_headers():
