@@ -44,6 +44,12 @@ class Generator:
         resp = self.client.messages.create(
             model=self.model,
             max_tokens=self.max_tokens,
+            # NOTE: cache_control is wired correctly, but Claude only caches a
+            # block once it exceeds the minimum cacheable length (~1024 tokens
+            # for Sonnet/Opus). SYSTEM_PROMPT is far shorter, so caching is a
+            # no-op today. It starts paying off if/when we prepend a large
+            # stable prefix (e.g. few-shot examples); the per-query retrieved
+            # context is deliberately NOT cached since it changes every call.
             system=[
                 {
                     "type": "text",

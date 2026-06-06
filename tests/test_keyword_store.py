@@ -27,3 +27,27 @@ def test_add_is_idempotent_on_reindex(tmp_path):
     ks.add(ids=["a_0"], documents=["attention mechanism revised"])
     hits = ks.query("attention", top_k=5)
     assert len([h for h in hits if h["id"] == "a_0"]) == 1
+
+
+def test_keyword_store_usable_across_threads(tmp_path):
+    """Regression: the singleton store is created in one thread but queried from
+    FastAPI's threadpool workers — sqlite must allow cross-thread use."""
+    import threading
+
+    ks = KeywordStore(str(tmp_path / "kw.db"))
+    ks.add(ids=["a_0"], documents=["attention is all you need"])
+
+    out: dict = {}
+
+    def worker():
+        try:
+            out["hits"] = ks.query("attention", top_k=5)
+        except Exception as e:  # noqa: BLE001
+            out["error"] = repr(e)
+
+    t = threading.Thread(target=worker)
+    t.start()
+    t.join()
+
+    assert "error" not in out, out.get("error")
+    assert [h["id"] for h in out["hits"]] == ["a_0"]
