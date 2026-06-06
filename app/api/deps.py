@@ -6,9 +6,11 @@ from anthropic import Anthropic
 
 from app.config import get_settings
 from app.rag.generator import Generator
+from app.rag.query_rewriter import QueryRewriter
 from app.rag.reranker import Reranker
 from app.rag.retriever import Retriever
 from app.stores.keyword_store import KeywordStore
+from app.stores.query_log import QueryLog
 from app.stores.vector_store import VectorStore
 from pipeline.embed import Embedder
 
@@ -51,3 +53,21 @@ def get_retriever() -> Retriever:
 
 def get_generator() -> Generator:
     return Generator(client=_anthropic_client(), model=get_settings().claude_model)
+
+
+@lru_cache(maxsize=1)
+def _query_log() -> QueryLog:
+    return QueryLog(get_settings().query_log_db_path)
+
+
+@lru_cache(maxsize=1)
+def _rewriter() -> QueryRewriter:
+    return QueryRewriter(client=_anthropic_client(), model=get_settings().rewriter_model)
+
+
+def get_query_log() -> QueryLog:
+    return _query_log()
+
+
+def get_query_rewriter() -> QueryRewriter:
+    return _rewriter()
