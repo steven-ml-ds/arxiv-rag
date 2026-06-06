@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     reranker_model: str = "BAAI/bge-reranker-base"
     rewriter_model: str = "claude-haiku-4-5"
     query_log_db_path: str = "data/query_log.db"
+    golden_set_path: str = "eval/golden_set.json"
+    eval_results_path: str = "data/eval_results.json"
     pdf_dir: str = "data/pdfs"
 
 

@@ -1,4 +1,7 @@
+from unittest.mock import MagicMock
+
 from eval.metrics import citation_accuracy, hit_at_k
+from eval.run_eval import evaluate
 
 
 def test_hit_at_k_true_when_expected_in_topk():
@@ -20,3 +23,25 @@ def test_citation_accuracy_precision_of_cited():
 
 def test_citation_accuracy_zero_when_no_citations():
     assert citation_accuracy("no markers here", ["2205.14135"]) == 0.0
+
+
+def test_evaluate_aggregates_metrics():
+    golden = [
+        {"question": "q1", "expected_arxiv_ids": ["A"]},
+        {"question": "q2", "expected_arxiv_ids": ["Z"]},  # will miss
+    ]
+    retriever = MagicMock()
+    retriever.retrieve.side_effect = [
+        [{"id": "A_0", "document": "d", "metadata": {"arxiv_id": "A", "title": "T"}}],
+        [{"id": "B_0", "document": "d", "metadata": {"arxiv_id": "B", "title": "T"}}],
+    ]
+    generator = MagicMock()
+    generator.generate.side_effect = ["answer [arxiv:A]", "answer [arxiv:B]"]
+
+    res = evaluate(golden, retriever, generator, top_k=5)
+
+    assert res["n"] == 2
+    assert res["hit_at_5"] == 0.5
+    assert res["citation_accuracy"] == 0.5
+    assert res["avg_latency_ms"] >= 0.0
+    assert len(res["rows"]) == 2
