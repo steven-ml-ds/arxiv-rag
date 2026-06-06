@@ -190,7 +190,11 @@ def test_search_allows_three_chunks_per_article_through_real_retriever(monkeypat
     ]
     fake_embedder = MagicMock()
     fake_embedder.embed_query.return_value = np.zeros(1024, dtype=np.float32)
-    real_retriever = Retriever(embedder=fake_embedder, store=fake_store)
+    fake_kw = MagicMock()
+    fake_kw.query.return_value = []
+    real_retriever = Retriever(
+        embedder=fake_embedder, store=fake_store, keyword_store=fake_kw
+    )
 
     main.app.dependency_overrides[search_api.get_retriever] = lambda: real_retriever
     try:

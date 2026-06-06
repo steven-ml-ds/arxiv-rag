@@ -1,4 +1,4 @@
-from pipeline.chunk import chunk_text
+from pipeline.chunk import Chunk, chunk_sections, chunk_text, split_sections
 
 
 def test_short_text_returns_single_chunk():
@@ -24,3 +24,36 @@ def test_overlap_must_be_smaller_than_size():
 
 def test_empty_input_returns_empty():
     assert chunk_text("", size=100, overlap=10) == []
+
+
+
+def test_split_sections_detects_headers():
+    text = (
+        "Title and authors\n"
+        "Abstract\nWe present a method.\n"
+        "1 Introduction\nPrior work exists.\n"
+        "References\n[1] Someone et al.\n"
+    )
+    sections = dict(split_sections(text))
+    assert "abstract" in sections
+    assert "introduction" in sections
+    assert "references" in sections
+    assert "We present a method." in sections["abstract"]
+
+
+def test_split_sections_no_headers_is_single_body():
+    assert split_sections("just flat text") == [("body", "just flat text")]
+
+
+def test_chunk_sections_drops_references_and_tags_section():
+    text = (
+        "Abstract\n" + "a" * 50 + "\n"
+        "Introduction\n" + "b" * 50 + "\n"
+        "References\n" + "c" * 500 + "\n"
+    )
+    chunks = chunk_sections(text, size=100, overlap=10)
+    sections = {c.section for c in chunks}
+    assert "references" not in sections
+    assert "abstract" in sections
+    assert all(isinstance(c, Chunk) for c in chunks)
+    assert all(len(c.text) <= 100 for c in chunks)

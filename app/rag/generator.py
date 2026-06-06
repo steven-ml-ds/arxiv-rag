@@ -5,10 +5,12 @@ from typing import Any
 from anthropic import Anthropic
 
 SYSTEM_PROMPT = (
-    "You are a research assistant who answers questions about AI/ML papers. "
-    "Use ONLY the provided context. If the context is insufficient, say so. "
-    "Be precise and concise. Cite papers inline using [arxiv:<id>] when you "
-    "reference them."
+    "You are a research assistant answering questions about AI/ML papers. "
+    "Use ONLY the provided context - never rely on prior knowledge. "
+    "If the context does not contain the answer, reply exactly: "
+    "\"I don't have enough information in the indexed papers to answer that.\" "
+    "After every claim, cite the supporting paper inline as [arxiv:<id>] using "
+    "the arxiv_id shown in the context. Be precise and concise."
 )
 
 
@@ -42,7 +44,19 @@ class Generator:
         resp = self.client.messages.create(
             model=self.model,
             max_tokens=self.max_tokens,
-            system=SYSTEM_PROMPT,
+            # NOTE: cache_control is wired correctly, but Claude only caches a
+            # block once it exceeds the minimum cacheable length (~1024 tokens
+            # for Sonnet/Opus). SYSTEM_PROMPT is far shorter, so caching is a
+            # no-op today. It starts paying off if/when we prepend a large
+            # stable prefix (e.g. few-shot examples); the per-query retrieved
+            # context is deliberately NOT cached since it changes every call.
+            system=[
+                {
+                    "type": "text",
+                    "text": SYSTEM_PROMPT,
+                    "cache_control": {"type": "ephemeral"},
+                }
+            ],
             messages=[{"role": "user", "content": user_content}],
         )
         return resp.content[0].text

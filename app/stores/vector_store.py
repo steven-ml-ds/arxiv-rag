@@ -48,5 +48,19 @@ class VectorStore:
             for i in range(len(res["ids"][0]))
         ]
 
+    def get(self, ids: list[str]) -> list[dict[str, Any]]:
+        if not ids:
+            return []
+        res = self.collection.get(ids=ids, include=["documents", "metadatas"])
+        return [
+            {
+                "id": res["ids"][i],
+                "document": res["documents"][i],
+                "metadata": res["metadatas"][i],
+                "distance": None,
+            }
+            for i in range(len(res["ids"]))
+        ]
+
     def count(self) -> int:
         return self.collection.count()

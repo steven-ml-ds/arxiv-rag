@@ -35,3 +35,17 @@ def test_generator_calls_claude_with_context():
     user_msg = call_kwargs["messages"][0]["content"]
     assert "FlashAttention is a fast attention algorithm." in user_msg
     assert "What is FlashAttention?" in user_msg
+
+
+def test_generator_marks_system_prompt_for_caching():
+    fake_client = MagicMock()
+    fake_client.messages.create.return_value = MagicMock(
+        content=[MagicMock(text="ok")]
+    )
+    g = Generator(client=fake_client, model="claude-sonnet-4-6")
+    g.generate(question="q", chunks=[
+        {"document": "d", "metadata": {"arxiv_id": "1", "title": "T"}}
+    ])
+    system = fake_client.messages.create.call_args.kwargs["system"]
+    assert isinstance(system, list)
+    assert system[0]["cache_control"] == {"type": "ephemeral"}
