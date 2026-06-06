@@ -39,3 +39,27 @@ alongside the Chroma store:
 ```bash
 make clean && make pipeline   # rebuilds both vector + keyword indexes
 ```
+
+## Milestone 3 — online UX
+
+M3 makes the chatbot usable as a live web app:
+
+- **Streaming** — `POST /chat/stream` returns Server-Sent Events: a `sources`
+  event, then `token` events as Claude generates, then a `done` event with
+  token usage.
+- **Chat page** — a minimal vanilla-JS UI at `http://localhost:8000/` that
+  streams answers token-by-token and supports follow-up questions.
+- **Multi-turn** — both `/chat` and `/chat/stream` accept an optional
+  `history` array (`[{role, content}, ...]`); the last few turns are included
+  in the prompt.
+- **Query rewriter** — follow-up questions are rewritten into standalone search
+  queries by Claude Haiku (`claude-haiku-4-5`) before retrieval (skipped on the
+  first turn).
+- **Query log** — every request is logged to `data/query_log.db` (question,
+  rewritten query, retrieved doc ids, latency, token usage).
+
+```bash
+make serve   # then open http://localhost:8000/
+curl -N -X POST localhost:8000/chat/stream -H 'Content-Type: application/json' \
+  -d '{"q":"What is FlashAttention?"}'
+```

@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     chroma_collection: str = "papers"
     keyword_db_path: str = "data/keywords.db"
     reranker_model: str = "BAAI/bge-reranker-base"
+    rewriter_model: str = "claude-haiku-4-5"
+    query_log_db_path: str = "data/query_log.db"
     pdf_dir: str = "data/pdfs"
 
 
