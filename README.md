@@ -63,3 +63,29 @@ make serve   # then open http://localhost:8000/
 curl -N -X POST localhost:8000/chat/stream -H 'Content-Type: application/json' \
   -d '{"q":"What is FlashAttention?"}'
 ```
+
+## Milestone 4 — evaluation & scheduling
+
+M4 adds RAG evaluation discipline and scheduled ingestion:
+
+- **Golden set** — `eval/golden_set.json`: 20 hand-written questions with
+  expected arxiv_ids. Edit the ids to match the papers you actually indexed.
+- **Eval** — `python eval/run_eval.py` runs the golden set through retrieval +
+  generation and reports `hit@5`, `citation_accuracy`, and `avg_latency_ms`,
+  writing `data/eval_results.json`.
+- **Dashboard** — `http://localhost:8000/dashboard` shows the latest eval
+  metrics and recent query-log rows (served from `GET /api/stats`).
+- **Weekly ingestion (Airflow)** — `airflow/dags/arxiv_ingest_dag.py` runs the
+  pipeline every Monday 03:00 with retries.
+
+```bash
+# Evaluate (needs ANTHROPIC_API_KEY + an indexed corpus)
+uv run python eval/run_eval.py
+
+# Dashboard
+make serve   # then open http://localhost:8000/dashboard
+
+# Airflow (optional)
+uv pip install -e ".[airflow]"
+AIRFLOW__CORE__DAGS_FOLDER="$PWD/airflow/dags" airflow standalone
+```

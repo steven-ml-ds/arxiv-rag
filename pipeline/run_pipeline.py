@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 log = logging.getLogger("pipeline")
 
 
-def main() -> int:
+def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Ingest arXiv papers into ChromaDB.")
     parser.add_argument("--max-papers", type=int, default=150)
     parser.add_argument(
@@ -26,7 +26,11 @@ def main() -> int:
     )
     parser.add_argument("--chunk-size", type=int, default=800)
     parser.add_argument("--chunk-overlap", type=int, default=100)
-    args = parser.parse_args()
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_arg_parser().parse_args(argv)
 
     settings = get_settings()
     embedder = Embedder(settings.embedding_model)
