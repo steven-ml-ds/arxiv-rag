@@ -18,7 +18,7 @@ def _run_pipeline() -> None:
     # Imported inside the task so DAG parsing doesn't load the ML stack.
     from pipeline.run_pipeline import main
 
-    rc = main()
+    rc = main([])  # explicit empty argv: use defaults, ignore the worker's sys.argv
     if rc != 0:
         raise RuntimeError(f"pipeline exited with code {rc}")
 

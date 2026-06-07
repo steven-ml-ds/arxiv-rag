@@ -42,3 +42,24 @@ def test_dashboard_serves_html(dash_client):
     assert r.status_code == 200
     assert r.headers["content-type"].startswith("text/html")
     assert "dashboard" in r.text.lower()
+
+
+def test_stats_handles_corrupt_eval_file(monkeypatch, tmp_path):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-test")
+    from app import main
+    from app.api import dashboard as dash_api
+
+    fake_log = MagicMock()
+    fake_log.recent.return_value = []
+    bad = tmp_path / "eval_results.json"
+    bad.write_text("{ this is not valid json")
+
+    monkeypatch.setattr(dash_api, "_results_path", lambda: str(bad))
+    main.app.dependency_overrides[dash_api.get_query_log] = lambda: fake_log
+    try:
+        with TestClient(main.app) as c:
+            r = c.get("/api/stats")
+        assert r.status_code == 200
+        assert r.json()["eval"] is None
+    finally:
+        main.app.dependency_overrides.clear()

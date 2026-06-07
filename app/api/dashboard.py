@@ -22,7 +22,12 @@ def _results_path() -> str:
 @router.get("/api/stats")
 def stats(query_log: QueryLog = Depends(get_query_log)) -> dict:
     path = Path(_results_path())
-    eval_results = json.loads(path.read_text()) if path.exists() else None
+    eval_results = None
+    if path.exists():
+        try:
+            eval_results = json.loads(path.read_text())
+        except (json.JSONDecodeError, OSError):
+            eval_results = None  # corrupt/unreadable results file -> show "no eval"
     return {"queries": query_log.recent(limit=20), "eval": eval_results}
 
 
