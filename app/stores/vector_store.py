@@ -62,5 +62,20 @@ class VectorStore:
             for i in range(len(res["ids"]))
         ]
 
+    def scan(self, limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
+        """Page through the collection without a query (for sampling/exports)."""
+        res = self.collection.get(
+            limit=limit, offset=offset, include=["documents", "metadatas"]
+        )
+        return [
+            {
+                "id": res["ids"][i],
+                "document": res["documents"][i],
+                "metadata": res["metadatas"][i],
+                "distance": None,
+            }
+            for i in range(len(res["ids"]))
+        ]
+
     def count(self) -> int:
         return self.collection.count()

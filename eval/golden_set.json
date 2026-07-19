@@ -1,82 +1,142 @@
 [
   {
     "question": "Where does absolute position information come from in decoder-only Transformers?",
-    "expected_arxiv_ids": ["2606.06160"]
+    "expected_arxiv_ids": [
+      "2606.06160"
+    ],
+    "category": "single_hop"
   },
   {
     "question": "What geometric perspective does the paper take on score matching errors in diffusion models?",
-    "expected_arxiv_ids": ["2606.06179"]
+    "expected_arxiv_ids": [
+      "2606.06179"
+    ],
+    "category": "single_hop"
   },
   {
     "question": "What is generative criticality in the context of LLM temperature scaling?",
-    "expected_arxiv_ids": ["2606.06238"]
+    "expected_arxiv_ids": [
+      "2606.06238"
+    ],
+    "category": "single_hop"
   },
   {
     "question": "How does lexical density limit effective context length in LLMs?",
-    "expected_arxiv_ids": ["2606.06203"]
+    "expected_arxiv_ids": [
+      "2606.06203"
+    ],
+    "category": "single_hop"
   },
   {
     "question": "How can the l2 norm of hidden states signal reasoning dynamics in large language models?",
-    "expected_arxiv_ids": ["2606.06188"]
+    "expected_arxiv_ids": [
+      "2606.06188"
+    ],
+    "category": "single_hop"
   },
   {
     "question": "How does IR3DE route queries to the most appropriate LLM using a linear router?",
-    "expected_arxiv_ids": ["2606.06098"]
+    "expected_arxiv_ids": [
+      "2606.06098"
+    ],
+    "category": "single_hop"
   },
   {
     "question": "How does Code2LoRA use hypernetworks to generate LoRA adapters for code language models?",
-    "expected_arxiv_ids": ["2606.06492"]
+    "expected_arxiv_ids": [
+      "2606.06492"
+    ],
+    "category": "single_hop"
   },
   {
     "question": "What problem does TailLoR solve in parameter-efficient continual learning and how does it protect principal components?",
-    "expected_arxiv_ids": ["2606.06494"]
+    "expected_arxiv_ids": [
+      "2606.06494"
+    ],
+    "category": "single_hop"
   },
   {
     "question": "How does the paper reframe agent memory as execution state management rather than semantic organization?",
-    "expected_arxiv_ids": ["2606.06090"]
+    "expected_arxiv_ids": [
+      "2606.06090"
+    ],
+    "category": "single_hop"
   },
   {
     "question": "How does TLA-Prover synthesize verifiable TLA+ specifications using preference-optimized LoRA?",
-    "expected_arxiv_ids": ["2606.06133"]
+    "expected_arxiv_ids": [
+      "2606.06133"
+    ],
+    "category": "single_hop"
   },
   {
     "question": "What is the Max@K policy gradient objective and how are advantage estimates computed for it?",
-    "expected_arxiv_ids": ["2606.06080"]
+    "expected_arxiv_ids": [
+      "2606.06080"
+    ],
+    "category": "single_hop"
   },
   {
     "question": "How does OrderGrad optimize beyond the mean using order-statistic policy gradient estimation?",
-    "expected_arxiv_ids": ["2606.06096"]
+    "expected_arxiv_ids": [
+      "2606.06096"
+    ],
+    "category": "single_hop"
   },
   {
     "question": "How does TOKI use bitemporal operator algebra to resolve contradictions in LLM-agent persistent memory?",
-    "expected_arxiv_ids": ["2606.06240"]
+    "expected_arxiv_ids": [
+      "2606.06240"
+    ],
+    "category": "single_hop"
   },
   {
     "question": "How does the hypernetwork-driven approach in federated adaptation generate personalized LoRA weights?",
-    "expected_arxiv_ids": ["2606.06154"]
+    "expected_arxiv_ids": [
+      "2606.06154"
+    ],
+    "category": "single_hop"
   },
   {
     "question": "How does learning to route LLMs from implicit cost-performance preferences work via meta-learning?",
-    "expected_arxiv_ids": ["2606.06178"]
+    "expected_arxiv_ids": [
+      "2606.06178"
+    ],
+    "category": "single_hop"
   },
   {
     "question": "What mechanistic monitoring approach detects reward-hacking activations and agentic risk states in LLM agents?",
-    "expected_arxiv_ids": ["2606.06223"]
+    "expected_arxiv_ids": [
+      "2606.06223"
+    ],
+    "category": "single_hop"
   },
   {
     "question": "How does test-time reconstruction close the loop on latent reasoning?",
-    "expected_arxiv_ids": ["2606.06252"]
+    "expected_arxiv_ids": [
+      "2606.06252"
+    ],
+    "category": "single_hop"
   },
   {
     "question": "What is the rate-distortion framework for adaptive state-action abstractions in reinforcement learning?",
-    "expected_arxiv_ids": ["2606.06123"]
+    "expected_arxiv_ids": [
+      "2606.06123"
+    ],
+    "category": "single_hop"
   },
   {
     "question": "What is Anchor PCA and how does it differ from standard PCA?",
-    "expected_arxiv_ids": ["2606.06233"]
+    "expected_arxiv_ids": [
+      "2606.06233"
+    ],
+    "category": "single_hop"
   },
   {
     "question": "How does modality-gap-aware self-distillation enable visual spatial planning from symbolic state?",
-    "expected_arxiv_ids": ["2606.06076"]
+    "expected_arxiv_ids": [
+      "2606.06076"
+    ],
+    "category": "single_hop"
   }
 ]
