@@ -1,23 +1,70 @@
 # arxiv-rag
 
-Personal RAG chatbot over arXiv AI/ML papers. Milestone 1: walking skeleton.
+Personal RAG chatbot over arXiv AI/ML papers with hybrid retrieval, reranking, streaming UX, and evaluation.
 
 ## Quick start
 
 ```bash
 make install
-cp .env.example .env  # then fill ANTHROPIC_API_KEY
-make pipeline         # ingest 10 papers (~5 min first run, downloads bge model)
+cp .env.example .env  # fill ANTHROPIC_API_KEY
+make pipeline         # ingest papers (~5 min first run, downloads bge model)
 make serve            # http://localhost:8000
 ```
 
-## Test it
+## Demo
 
-```bash
-curl -X POST localhost:8000/chat \
-  -H "Content-Type: application/json" \
-  -d '{"q": "What is FlashAttention?"}'
+**Q:** What is FlashAttention?
+
+**A (with citations):**
+> FlashAttention [arxiv:2205.14135] is an IO-aware exact attention algorithm that tiles
+> attention computation into blocks that fit in GPU SRAM, dramatically reducing HBM
+> reads/writes. It achieves 2–4× speedup over standard attention while producing
+> numerically identical results, enabling training of longer sequences without memory blow-up.
+
+## Architecture
+
 ```
+PDFs (arXiv papers)
+     │
+     ▼  pipeline/ingest.py
+     │  • section-aware chunking — drops References/Acknowledgments
+     │  • embed: BAAI/bge-large-en-v1.5
+     ├──▶ ChromaDB        (dense vector index)
+     └──▶ SQLite FTS5     (BM25 keyword index)
+                │
+                ▼  pipeline/retrieve.py
+         Hybrid retrieval
+          dense ──┐
+          BM25  ──┼──▶ RRF fusion ──▶ BAAI/bge-reranker-base ──▶ top-k chunks
+                  │
+                  ▼  app/rag/
+           Claude (claude-sonnet-4-6)
+            • system-prompt caching (cache_control)
+            • structured inline citations [arxiv:<id>]
+            • query rewriting for follow-ups (claude-haiku-4-5)
+            • streaming SSE (token-by-token)
+                  │
+                  ▼
+     POST /chat  ·  POST /chat/stream
+                  │
+                  ▼  eval/run_eval.py
+     Golden set (20 Q) ──▶ hit@5 · citation_accuracy · avg_latency_ms
+```
+
+## Retrieval Evaluation
+
+20-question golden set (`eval/golden_set.json`) measures end-to-end RAG quality.
+Run `uv run python eval/run_eval.py` (requires `ANTHROPIC_API_KEY` + indexed corpus);
+results are written to `data/eval_results.json` and surfaced at `/dashboard`.
+
+| Metric | Definition | Score |
+|--------|-----------|-------|
+| hit@5 (retrieval) | ≥ 1 expected arxiv_id in top-5 retrieved chunks | **1.00** (20/20) |
+| citation_accuracy (generation) | Expected ids cited in the answer | **1.00** (20/20) |
+| avg_latency_ms | End-to-end per question | ~9 000 ms |
+
+Evaluated on 20 hand-written questions over 150 indexed arXiv AI/ML papers (June 2026 batch).
+Run `uv run python eval/run_eval.py` to reproduce; results are written to `data/eval_results.json`.
 
 ## Milestone 2 — better retrieval & answers
 
@@ -70,7 +117,7 @@ M4 adds RAG evaluation discipline and scheduled ingestion:
 
 - **Golden set** — `eval/golden_set.json`: 20 hand-written questions with
   expected arxiv_ids. Edit the ids to match the papers you actually indexed.
-- **Eval** — `python eval/run_eval.py` runs the golden set through retrieval +
+- **Eval** — `uv run python eval/run_eval.py` runs the golden set through retrieval +
   generation and reports `hit@5`, `citation_accuracy`, and `avg_latency_ms`,
   writing `data/eval_results.json`.
 - **Dashboard** — `http://localhost:8000/dashboard` shows the latest eval

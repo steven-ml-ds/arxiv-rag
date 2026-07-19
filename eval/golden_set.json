@@ -1,22 +1,82 @@
 [
-  {"question": "What is FlashAttention?", "expected_arxiv_ids": ["2205.14135"]},
-  {"question": "What problem does FlashAttention-2 solve over the original?", "expected_arxiv_ids": ["2307.08691"]},
-  {"question": "What is the Mamba state space model?", "expected_arxiv_ids": ["2312.00752"]},
-  {"question": "How does LoRA reduce fine-tuning cost?", "expected_arxiv_ids": ["2106.09685"]},
-  {"question": "What is QLoRA and how does it use 4-bit quantization?", "expected_arxiv_ids": ["2305.14314"]},
-  {"question": "What is the Transformer architecture?", "expected_arxiv_ids": ["1706.03762"]},
-  {"question": "What is retrieval-augmented generation (RAG)?", "expected_arxiv_ids": ["2005.11401"]},
-  {"question": "What is Chain-of-Thought prompting?", "expected_arxiv_ids": ["2201.11903"]},
-  {"question": "How does InstructGPT use RLHF?", "expected_arxiv_ids": ["2203.02155"]},
-  {"question": "What is Constitutional AI?", "expected_arxiv_ids": ["2212.08073"]},
-  {"question": "What is Direct Preference Optimization (DPO)?", "expected_arxiv_ids": ["2305.18290"]},
-  {"question": "What is a Mixture-of-Experts layer?", "expected_arxiv_ids": ["1701.06538"]},
-  {"question": "What does the Chinchilla scaling law say?", "expected_arxiv_ids": ["2203.15556"]},
-  {"question": "What is the GPT-3 few-shot learning result?", "expected_arxiv_ids": ["2005.14165"]},
-  {"question": "What is BERT pretraining?", "expected_arxiv_ids": ["1810.04805"]},
-  {"question": "What is the ELECTRA pretraining objective?", "expected_arxiv_ids": ["2003.10555"]},
-  {"question": "What is the Vision Transformer (ViT)?", "expected_arxiv_ids": ["2010.11929"]},
-  {"question": "What is CLIP and how is it trained?", "expected_arxiv_ids": ["2103.00020"]},
-  {"question": "What is the Mamba-2 / state space duality result?", "expected_arxiv_ids": ["2405.21060"]},
-  {"question": "What is speculative decoding?", "expected_arxiv_ids": ["2211.17192"]}
+  {
+    "question": "Where does absolute position information come from in decoder-only Transformers?",
+    "expected_arxiv_ids": ["2606.06160"]
+  },
+  {
+    "question": "What geometric perspective does the paper take on score matching errors in diffusion models?",
+    "expected_arxiv_ids": ["2606.06179"]
+  },
+  {
+    "question": "What is generative criticality in the context of LLM temperature scaling?",
+    "expected_arxiv_ids": ["2606.06238"]
+  },
+  {
+    "question": "How does lexical density limit effective context length in LLMs?",
+    "expected_arxiv_ids": ["2606.06203"]
+  },
+  {
+    "question": "How can the l2 norm of hidden states signal reasoning dynamics in large language models?",
+    "expected_arxiv_ids": ["2606.06188"]
+  },
+  {
+    "question": "How does IR3DE route queries to the most appropriate LLM using a linear router?",
+    "expected_arxiv_ids": ["2606.06098"]
+  },
+  {
+    "question": "How does Code2LoRA use hypernetworks to generate LoRA adapters for code language models?",
+    "expected_arxiv_ids": ["2606.06492"]
+  },
+  {
+    "question": "What problem does TailLoR solve in parameter-efficient continual learning and how does it protect principal components?",
+    "expected_arxiv_ids": ["2606.06494"]
+  },
+  {
+    "question": "How does the paper reframe agent memory as execution state management rather than semantic organization?",
+    "expected_arxiv_ids": ["2606.06090"]
+  },
+  {
+    "question": "How does TLA-Prover synthesize verifiable TLA+ specifications using preference-optimized LoRA?",
+    "expected_arxiv_ids": ["2606.06133"]
+  },
+  {
+    "question": "What is the Max@K policy gradient objective and how are advantage estimates computed for it?",
+    "expected_arxiv_ids": ["2606.06080"]
+  },
+  {
+    "question": "How does OrderGrad optimize beyond the mean using order-statistic policy gradient estimation?",
+    "expected_arxiv_ids": ["2606.06096"]
+  },
+  {
+    "question": "How does TOKI use bitemporal operator algebra to resolve contradictions in LLM-agent persistent memory?",
+    "expected_arxiv_ids": ["2606.06240"]
+  },
+  {
+    "question": "How does the hypernetwork-driven approach in federated adaptation generate personalized LoRA weights?",
+    "expected_arxiv_ids": ["2606.06154"]
+  },
+  {
+    "question": "How does learning to route LLMs from implicit cost-performance preferences work via meta-learning?",
+    "expected_arxiv_ids": ["2606.06178"]
+  },
+  {
+    "question": "What mechanistic monitoring approach detects reward-hacking activations and agentic risk states in LLM agents?",
+    "expected_arxiv_ids": ["2606.06223"]
+  },
+  {
+    "question": "How does test-time reconstruction close the loop on latent reasoning?",
+    "expected_arxiv_ids": ["2606.06252"]
+  },
+  {
+    "question": "What is the rate-distortion framework for adaptive state-action abstractions in reinforcement learning?",
+    "expected_arxiv_ids": ["2606.06123"]
+  },
+  {
+    "question": "What is Anchor PCA and how does it differ from standard PCA?",
+    "expected_arxiv_ids": ["2606.06233"]
+  },
+  {
+    "question": "How does modality-gap-aware self-distillation enable visual spatial planning from symbolic state?",
+    "expected_arxiv_ids": ["2606.06076"]
+  }
 ]
