@@ -2,8 +2,7 @@ __pycache__/
 *.pyc
 .venv/
 .env
-data/pdfs/
-data/chroma/
+data/
 .pytest_cache/
 .coverage
 .ruff_cache/
