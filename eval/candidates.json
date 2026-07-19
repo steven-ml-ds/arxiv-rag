@@ -1,0 +1,234 @@
+{
+  "multi_hop": [
+    {
+      "question": "How can an LLM serving system reuse previously computed attention state, and along which structural dimensions — a conversation's earlier exchanges versus the model's internal attention components — have recent systems found reuse opportunities?",
+      "expected_arxiv_ids": [
+        "2606.06302",
+        "2606.06256"
+      ],
+      "category": "multi_hop",
+      "rationale": "Tangram exploits non-uniform KV cache across turns; RedKnot does head-aware KV reuse. Answer requires both.",
+      "titles": [
+        "Tangram: Unlocking Non-Uniform KV Cache for Efficient Multi-turn LLM Serving",
+        "RedKnot: Efficient Long-Context LLM Serving with Head-Aware KV Reuse and SegPagedAttention"
+      ]
+    },
+    {
+      "question": "When many specialized language models are available, how do lightweight closed-form methods for deciding which model should answer a prompt compare with approaches that learn routing from user preferences balancing quality against expense?",
+      "expected_arxiv_ids": [
+        "2606.06098",
+        "2606.06178"
+      ],
+      "category": "multi_hop",
+      "rationale": "IR3DE is the linear router; the HKUST paper meta-learns from implicit cost-performance preferences. Comparison needs both.",
+      "titles": [
+        "IR3DE: A Linear Router for Large Language Models",
+        "Learning to Route LLMs from Implicit Cost-Performance Preferences via Meta-Learning"
+      ]
+    },
+    {
+      "question": "As conversational agents accumulate long-term memories over many sessions, how do recent systems organize what they remember, and how do they cope with stored facts that later turn out to conflict with each other?",
+      "expected_arxiv_ids": [
+        "2606.06337",
+        "2606.06240"
+      ],
+      "category": "multi_hop",
+      "rationale": "TokenMizer organizes session memory as a graph; TOKI resolves contradictions with a bitemporal operator algebra.",
+      "titles": [
+        "TokenMizer: Graph-Structured Session Memory for Long-Horizon LLM Context Management",
+        "TOKI: A Bitemporal Operator Algebra for Contradiction Resolution in LLM-Agent Persistent Memory"
+      ]
+    },
+    {
+      "question": "Transformers often treat information differently depending on where it sits in the input. What explains a decoder-only model's implicit sense of token location, and how can adjusting the strength of location signals at different depths reduce unevenness in attention?",
+      "expected_arxiv_ids": [
+        "2606.06160",
+        "2606.27705"
+      ],
+      "category": "multi_hop",
+      "rationale": "One paper analyzes the origin of absolute position; the other intervenes on positional embeddings layer-by-layer.",
+      "titles": [
+        "Where does Absolute Position come from in decoder-only Transformers?",
+        "Mitigating Position Bias in Transformers via Layer-Specific Positional Embedding Scaling"
+      ]
+    },
+    {
+      "question": "How can provable robustness guarantees be extended from classifiers to systems that transcribe spoken audio, and what techniques reduce the computational cost of producing such guarantees?",
+      "expected_arxiv_ids": [
+        "2606.27698",
+        "2606.27694"
+      ],
+      "category": "multi_hop",
+      "rationale": "Same research group: one extends certification to ASR, the other accelerates certification via early stopping.",
+      "titles": [
+        "What Was That Again? Certified Robustness for Automatic Speech Recognition",
+        "Halt Fast! Early Stopping for Certified Robustness"
+      ]
+    },
+    {
+      "question": "Some language models reason in continuous hidden space rather than emitting word-by-word chains of thought. What approaches make such internal reasoning more reliable — invertible density modeling of the latent trajectory versus verifying reconstructions at inference time?",
+      "expected_arxiv_ids": [
+        "2606.06447",
+        "2606.06252"
+      ],
+      "category": "multi_hop",
+      "rationale": "Two different mechanisms applied to the same emerging area (latent reasoning).",
+      "titles": [
+        "Latent Reasoning with Normalizing Flows",
+        "Closing the Loop on Latent Reasoning via Test-Time Reconstruction"
+      ]
+    },
+    {
+      "question": "When learning systems exploit loopholes in their objective instead of solving the intended task, how is this failure detected inside language-model agents, compared with how it is prevented in cooperative control of physical systems such as turbulent flows?",
+      "expected_arxiv_ids": [
+        "2606.06223",
+        "2606.06227"
+      ],
+      "category": "multi_hop",
+      "rationale": "Mechanistic monitoring of reward-hack activations in LLM agents vs. reward design in fluid-control MARL.",
+      "titles": [
+        "From Reward-Hack Activations to Agentic Risk States: Context-Calibrated Mechanistic Monitoring in LLM Agents",
+        "Drag reduction or reward hacking? Recurrent multi-agent reinforcement learning that earns its reward"
+      ]
+    },
+    {
+      "question": "Dictionary-learning methods that decompose a network's activations into sparse features can be hard to interpret. How can their interpretability be improved during training itself, versus by assigning human-readable names to the learned directions afterwards?",
+      "expected_arxiv_ids": [
+        "2606.06333",
+        "2606.27941"
+      ],
+      "category": "multi_hop",
+      "rationale": "Train-time (subspace-aware SAEs) vs post-hoc (VASAE naming) interpretability for the same artifact class.",
+      "titles": [
+        "Subspace-Aware Sparse Autoencoders for Effective Mechanistic Interpretability",
+        "VASAE: Naming SAE Dictionary Directions with Vocabulary-Aligned Anchoring"
+      ]
+    },
+    {
+      "question": "For forecasting ship movements from historical tracking data, how do models that consult stored examples of past motion patterns differ from probabilistic approaches that place priors over continuous-time dynamics?",
+      "expected_arxiv_ids": [
+        "2606.06311",
+        "2606.06351"
+      ],
+      "category": "multi_hop",
+      "rationale": "Same task and overlapping author group, two modeling philosophies (memory vs Bayesian dynamics).",
+      "titles": [
+        "AIS-Based Vessel Trajectory Prediction Using Memory-Augmented Neural Networks",
+        "Function-Space Priors for Bayesian Neural ODEs with Application to Vessel Trajectory Prediction"
+      ]
+    },
+    {
+      "question": "Parallel text generation via iterative denoising still trails left-to-right generation in quality. What remedies have been proposed — restructuring how context is attended to during parallel decoding, versus pulling in external documents to guide generation?",
+      "expected_arxiv_ids": [
+        "2606.27732",
+        "2606.06474"
+      ],
+      "category": "multi_hop",
+      "rationale": "Bifocal dLLMs change the context mechanism; self-augmenting retrieval adds external evidence. Both target dLLM quality.",
+      "titles": [
+        "Bifocal Diffusion Language Models: Asymmetric Bidirectional Context for Parallel Generation",
+        "Self-Augmenting Retrieval for Diffusion Language Models"
+      ]
+    },
+    {
+      "question": "To speed up long-context decoding, some systems attend to only a subset of tokens. How do designs that make one token-selection decision and share it across the network compare with serving frameworks that let each workload customize its own sparsity pattern?",
+      "expected_arxiv_ids": [
+        "2606.06467",
+        "2606.06453"
+      ],
+      "category": "multi_hop",
+      "rationale": "You Only Index Once shares cross-layer routing; Vortex makes sparse attention programmable for agent serving.",
+      "titles": [
+        "You Only Index Once: Cross-Layer Sparse Attention with Shared Routing",
+        "Vortex: Efficient and Programmable Sparse Attention Serving for AI Agents"
+      ]
+    },
+    {
+      "question": "When a model's built-in knowledge disagrees with evidence supplied at inference time — retrieved text or an input image — how does the model decide which side to trust, and what interventions can steer that choice?",
+      "expected_arxiv_ids": [
+        "2606.27786",
+        "2606.28273"
+      ],
+      "category": "multi_hop",
+      "rationale": "SHIFT steers activations for RAG knowledge conflict; the VLM paper traces causal mechanisms of perception-knowledge conflict.",
+      "titles": [
+        "Shift: Gate-Modulated Activation Steering for Knowledge Conflict Mitigation in Retrieval-Augmented Generation",
+        "Vision-Default, Prior-Override: Causal Mechanisms of Perception-Knowledge Conflict in Vision-Language Models"
+      ]
+    }
+  ],
+  "unanswerable": [
+    {
+      "question": "How does vLLM's PagedAttention manage KV cache memory fragmentation?",
+      "expected_arxiv_ids": [],
+      "category": "unanswerable",
+      "rationale": "Trap: corpus has SegPagedAttention (RedKnot) and KV cache papers, but not vLLM/PagedAttention itself."
+    },
+    {
+      "question": "What IO-aware tiling strategy does FlashAttention use to reduce HBM reads and writes?",
+      "expected_arxiv_ids": [],
+      "category": "unanswerable",
+      "rationale": "Attention-efficiency papers abound in the corpus, but FlashAttention (2205.14135) is not indexed."
+    },
+    {
+      "question": "How does LoRA's low-rank decomposition reduce the number of trainable parameters compared to full fine-tuning of GPT-3?",
+      "expected_arxiv_ids": [],
+      "category": "unanswerable",
+      "rationale": "Trap: corpus has several LoRA-adjacent papers (TailLoR, Code2LoRA, hypernetwork LoRA) but not the original LoRA paper."
+    },
+    {
+      "question": "What loss does Direct Preference Optimization derive from the Bradley-Terry model, and how does it remove the need for an explicit reward model?",
+      "expected_arxiv_ids": [],
+      "category": "unanswerable",
+      "rationale": "Preference/reward papers exist (HPRO, process reward modeling) but not DPO itself."
+    },
+    {
+      "question": "What compute-optimal token-to-parameter ratio does the Chinchilla scaling law prescribe?",
+      "expected_arxiv_ids": [],
+      "category": "unanswerable",
+      "rationale": "Scaling-law-adjacent papers exist (quadratic network scaling laws) but not Chinchilla."
+    },
+    {
+      "question": "How does speculative decoding use a draft model to accelerate autoregressive generation without changing the output distribution?",
+      "expected_arxiv_ids": [],
+      "category": "unanswerable",
+      "rationale": "Decoding-efficiency papers exist (parallel rollout, diffusion LMs) but not speculative decoding."
+    },
+    {
+      "question": "What auxiliary load-balancing loss does the Switch Transformer use to keep experts evenly utilized?",
+      "expected_arxiv_ids": [],
+      "category": "unanswerable",
+      "rationale": "Trap: FlexMoE covers MoE pruning, but Switch Transformer and its load-balancing loss are not indexed."
+    },
+    {
+      "question": "How does QLoRA's 4-bit NormalFloat quantization preserve fine-tuning quality?",
+      "expected_arxiv_ids": [],
+      "category": "unanswerable",
+      "rationale": "Quantization and LoRA variants appear separately in the corpus; QLoRA does not."
+    },
+    {
+      "question": "What contrastive objective does CLIP use to align images and text, and on how many image-text pairs was it trained?",
+      "expected_arxiv_ids": [],
+      "category": "unanswerable",
+      "rationale": "Many VLM papers in corpus, but not CLIP; the training-set size detail is nowhere."
+    },
+    {
+      "question": "How does Mamba's selection mechanism make state-space model parameters input-dependent?",
+      "expected_arxiv_ids": [],
+      "category": "unanswerable",
+      "rationale": "State-space guided VLA (S2-VLA) is indexed; the original Mamba paper is not."
+    },
+    {
+      "question": "What retrieval granularity does RETRO use, and how does its chunked cross-attention integrate retrieved neighbors?",
+      "expected_arxiv_ids": [],
+      "category": "unanswerable",
+      "rationale": "RAG papers exist in corpus (SHIFT, self-augmenting retrieval) but not RETRO."
+    },
+    {
+      "question": "What win rate does Constitutional AI report against RLHF baselines on harmlessness evaluations?",
+      "expected_arxiv_ids": [],
+      "category": "unanswerable",
+      "rationale": "Alignment papers exist (Democratic ICAI debates steering principles — a near-namesake trap) but not Constitutional AI."
+    }
+  ]
+}

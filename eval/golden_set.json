@@ -138,5 +138,141 @@
       "2606.06076"
     ],
     "category": "single_hop"
+  },
+  {
+    "question": "How can an LLM serving system reuse previously computed attention state, and along which structural dimensions — a conversation's earlier exchanges versus the model's internal attention components — have recent systems found reuse opportunities?",
+    "expected_arxiv_ids": [
+      "2606.06302",
+      "2606.06256"
+    ],
+    "category": "multi_hop"
+  },
+  {
+    "question": "When many specialized language models are available, how do lightweight closed-form methods for deciding which model should answer a prompt compare with approaches that learn routing from user preferences balancing quality against expense?",
+    "expected_arxiv_ids": [
+      "2606.06098",
+      "2606.06178"
+    ],
+    "category": "multi_hop"
+  },
+  {
+    "question": "As conversational agents accumulate long-term memories over many sessions, how do recent systems organize what they remember, and how do they cope with stored facts that later turn out to conflict with each other?",
+    "expected_arxiv_ids": [
+      "2606.06337",
+      "2606.06240"
+    ],
+    "category": "multi_hop"
+  },
+  {
+    "question": "Transformers often treat information differently depending on where it sits in the input. What explains a decoder-only model's implicit sense of token location, and how can adjusting the strength of location signals at different depths reduce unevenness in attention?",
+    "expected_arxiv_ids": [
+      "2606.06160",
+      "2606.27705"
+    ],
+    "category": "multi_hop"
+  },
+  {
+    "question": "How can provable robustness guarantees be extended from classifiers to systems that transcribe spoken audio, and what techniques reduce the computational cost of producing such guarantees?",
+    "expected_arxiv_ids": [
+      "2606.27698",
+      "2606.27694"
+    ],
+    "category": "multi_hop"
+  },
+  {
+    "question": "Some language models reason in continuous hidden space rather than emitting word-by-word chains of thought. What approaches make such internal reasoning more reliable — invertible density modeling of the latent trajectory versus verifying reconstructions at inference time?",
+    "expected_arxiv_ids": [
+      "2606.06447",
+      "2606.06252"
+    ],
+    "category": "multi_hop"
+  },
+  {
+    "question": "When learning systems exploit loopholes in their objective instead of solving the intended task, how is this failure detected inside language-model agents, compared with how it is prevented in cooperative control of physical systems such as turbulent flows?",
+    "expected_arxiv_ids": [
+      "2606.06223",
+      "2606.06227"
+    ],
+    "category": "multi_hop"
+  },
+  {
+    "question": "Dictionary-learning methods that decompose a network's activations into sparse features can be hard to interpret. How can their interpretability be improved during training itself, versus by assigning human-readable names to the learned directions afterwards?",
+    "expected_arxiv_ids": [
+      "2606.06333",
+      "2606.27941"
+    ],
+    "category": "multi_hop"
+  },
+  {
+    "question": "For forecasting ship movements from historical tracking data, how do models that consult stored examples of past motion patterns differ from probabilistic approaches that place priors over continuous-time dynamics?",
+    "expected_arxiv_ids": [
+      "2606.06311",
+      "2606.06351"
+    ],
+    "category": "multi_hop"
+  },
+  {
+    "question": "Parallel text generation via iterative denoising still trails left-to-right generation in quality. What remedies have been proposed — restructuring how context is attended to during parallel decoding, versus pulling in external documents to guide generation?",
+    "expected_arxiv_ids": [
+      "2606.27732",
+      "2606.06474"
+    ],
+    "category": "multi_hop"
+  },
+  {
+    "question": "To speed up long-context decoding, some systems attend to only a subset of tokens. How do designs that make one token-selection decision and share it across the network compare with serving frameworks that let each workload customize its own sparsity pattern?",
+    "expected_arxiv_ids": [
+      "2606.06467",
+      "2606.06453"
+    ],
+    "category": "multi_hop"
+  },
+  {
+    "question": "When a model's built-in knowledge disagrees with evidence supplied at inference time — retrieved text or an input image — how does the model decide which side to trust, and what interventions can steer that choice?",
+    "expected_arxiv_ids": [
+      "2606.27786",
+      "2606.28273"
+    ],
+    "category": "multi_hop"
+  },
+  {
+    "question": "How does vLLM's PagedAttention manage KV cache memory fragmentation?",
+    "expected_arxiv_ids": [],
+    "category": "unanswerable"
+  },
+  {
+    "question": "What IO-aware tiling strategy does FlashAttention use to reduce HBM reads and writes?",
+    "expected_arxiv_ids": [],
+    "category": "unanswerable"
+  },
+  {
+    "question": "How does LoRA's low-rank decomposition reduce the number of trainable parameters compared to full fine-tuning of GPT-3?",
+    "expected_arxiv_ids": [],
+    "category": "unanswerable"
+  },
+  {
+    "question": "What loss does Direct Preference Optimization derive from the Bradley-Terry model, and how does it remove the need for an explicit reward model?",
+    "expected_arxiv_ids": [],
+    "category": "unanswerable"
+  },
+  {
+    "question": "How does speculative decoding use a draft model to accelerate autoregressive generation without changing the output distribution?",
+    "expected_arxiv_ids": [],
+    "category": "unanswerable"
+  },
+  {
+    "question": "What auxiliary load-balancing loss does the Switch Transformer use to keep experts evenly utilized?",
+    "expected_arxiv_ids": [],
+    "category": "unanswerable"
+  },
+  {
+    "question": "How does QLoRA's 4-bit NormalFloat quantization preserve fine-tuning quality?",
+    "expected_arxiv_ids": [],
+    "category": "unanswerable"
+  },
+  {
+    "question": "What retrieval granularity does RETRO use, and how does its chunked cross-attention integrate retrieved neighbors?",
+    "expected_arxiv_ids": [],
+    "category": "unanswerable"
   }
 ]

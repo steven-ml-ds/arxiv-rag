@@ -48,23 +48,49 @@ PDFs (arXiv papers)
      POST /chat  ·  POST /chat/stream
                   │
                   ▼  eval/run_eval.py
-     Golden set (20 Q) ──▶ hit@5 · citation_accuracy · avg_latency_ms
+     Golden set (40 Q) ──▶ hit@5 · citations · refusals · faithfulness
 ```
 
-## Retrieval Evaluation
+## Evaluation (M5: hardened)
 
-20-question golden set (`eval/golden_set.json`) measures end-to-end RAG quality.
-Run `uv run python eval/run_eval.py` (requires `ANTHROPIC_API_KEY` + indexed corpus);
-results are written to `data/eval_results.json` and surfaced at `/dashboard`.
+The original 20-question golden set saturated (hit@5 = 1.00, citation_accuracy
+= 1.00) — it could no longer tell a good change from a bad one. M5 expands it
+to **40 questions across three categories**, each targeting a different failure
+mode, over 300 indexed arXiv AI/ML papers (June 2026 batch):
 
-| Metric | Definition | Score |
-|--------|-----------|-------|
-| hit@5 (retrieval) | ≥ 1 expected arxiv_id in top-5 retrieved chunks | **1.00** (20/20) |
-| citation_accuracy (generation) | Expected ids cited in the answer | **1.00** (20/20) |
-| avg_latency_ms | End-to-end per question | ~9 000 ms |
+| Category | n | Scored by | Catches |
+|----------|---|-----------|---------|
+| single_hop | 20 | any-hit@5 + citation_accuracy | basic retrieval/citation regressions |
+| multi_hop | 12 | **all-hit@5** (both papers required) + citation_accuracy | retrieval that can't cover compound questions |
+| unanswerable | 8 | refusal_accuracy (sentinel + zero citations) | hallucinated answers to out-of-corpus questions |
 
-Evaluated on 20 hand-written questions over 150 indexed arXiv AI/ML papers (June 2026 batch).
-Run `uv run python eval/run_eval.py` to reproduce; results are written to `data/eval_results.json`.
+Multi-hop questions are phrased conceptually (no paper-specific vocabulary),
+so lexical matching alone can't find the sources. Unanswerable questions are
+deliberate traps: on-topic, with near-neighbor papers in the corpus
+(e.g. asking about vLLM's PagedAttention while the corpus contains
+SegPagedAttention) — the system must notice that *related ≠ sufficient*.
+
+Every run also reports `citation_grounding` (cited ids must actually appear in
+the retrieved context — anything else is fabrication) and `false_refusal_rate`
+(refusing questions it should answer). `--judge` adds claim-level faithfulness
+scoring with `claude-haiku-4-5` as LLM-as-judge.
+
+**Retrieval baseline** (`uv run python eval/run_eval.py --retrieval-only`, no API needed):
+
+| Category | all/any-hit@5 |
+|----------|---------------|
+| single_hop | 1.00 (20/20) |
+| multi_hop | 0.58 (7/12) |
+
+single_hop staying at 1.00 confirms hardening didn't break the base case;
+multi_hop at 0.58 is the new headroom to optimize against. Generation-side
+scores (citations, refusals, faithfulness) come from the full run:
+`uv run python eval/run_eval.py [--judge]`, written to `data/eval_results.json`
+and surfaced at `/dashboard`.
+
+New questions are drafted with `eval/generate_questions.py` (samples the
+indexed corpus, proposes multi-hop pairs and unanswerable traps into
+`eval/candidates.json`) and **hand-reviewed** before entering the golden set.
 
 ## Milestone 2 — better retrieval & answers
 
@@ -115,8 +141,9 @@ curl -N -X POST localhost:8000/chat/stream -H 'Content-Type: application/json' \
 
 M4 adds RAG evaluation discipline and scheduled ingestion:
 
-- **Golden set** — `eval/golden_set.json`: 20 hand-written questions with
-  expected arxiv_ids. Edit the ids to match the papers you actually indexed.
+- **Golden set** — `eval/golden_set.json`: hand-reviewed questions with
+  expected arxiv_ids (grown to 40 across three categories in M5; see
+  Evaluation above). Edit the ids to match the papers you actually indexed.
 - **Eval** — `uv run python eval/run_eval.py` runs the golden set through retrieval +
   generation and reports `hit@5`, `citation_accuracy`, and `avg_latency_ms`,
   writing `data/eval_results.json`.

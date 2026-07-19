@@ -38,6 +38,16 @@ def _score_row(item: dict, retrieved_ids: list[str], answer: str, top_k: int) ->
     return row
 
 
+def _score_retrieval_row(item: dict, retrieved_ids: list[str], top_k: int) -> dict[str, Any]:
+    """Score only the retrieval half of one item (no answer available)."""
+    category = item.get("category", "single_hop")
+    row: dict[str, Any] = {"question": item["question"], "category": category}
+    if category != "unanswerable":
+        hit_fn = all_hit_at_k if category == "multi_hop" else hit_at_k
+        row["hit"] = hit_fn(retrieved_ids, item["expected_arxiv_ids"], top_k)
+    return row
+
+
 def _mean(rows: list[dict], key: str) -> float:
     vals = [r[key] for r in rows if key in r]
     return sum(vals) / len(vals) if vals else 0.0
@@ -51,14 +61,15 @@ def _aggregate(rows: list[dict[str, Any]]) -> dict[str, Any]:
         if not cat_rows:
             continue
         stats: dict[str, Any] = {"n": len(cat_rows)}
-        if cat == "unanswerable":
-            stats["refusal_accuracy"] = _mean(cat_rows, "refusal_correct")
-        else:
-            stats["hit_at_5"] = _mean(cat_rows, "hit")
-            stats["citation_accuracy"] = _mean(cat_rows, "citation_accuracy")
-        stats["citation_grounding"] = _mean(cat_rows, "citation_grounding")
-        if any("faithfulness" in r for r in cat_rows):
-            stats["faithfulness"] = _mean(cat_rows, "faithfulness")
+        # Only report metrics some row actually produced — retrieval-only runs
+        # have no generation metrics, and a fake 0.00 would read as a failure.
+        sources = {"refusal_accuracy": "refusal_correct", "hit_at_5": "hit",
+                   "citation_accuracy": "citation_accuracy",
+                   "citation_grounding": "citation_grounding",
+                   "faithfulness": "faithfulness"}
+        for out_key, row_key in sources.items():
+            if any(row_key in r for r in cat_rows):
+                stats[out_key] = _mean(cat_rows, row_key)
         by_category[cat] = stats
 
     return {
@@ -78,12 +89,15 @@ def _aggregate(rows: list[dict[str, Any]]) -> dict[str, Any]:
 def evaluate(
     golden: list[dict],
     retriever,
-    generator,
+    generator=None,
     top_k: int = 5,
     judge=None,
 ) -> dict[str, Any]:
     """Run the golden set through retrieval + generation, aggregating metrics.
 
+    `generator=None` runs retrieval-only: hit metrics are computed, generation
+    metrics (citations, refusals, faithfulness) are skipped — useful when the
+    retrieval stack is available but the LLM API is not.
     `judge` is an optional callable (question, chunks, answer) -> dict merged
     into the row (see eval.judge.make_judge).
     """
@@ -93,23 +107,27 @@ def evaluate(
         started = time.monotonic()
         chunks = retriever.retrieve(question, top_k=top_k)
         retrieved_ids = [c["metadata"].get("arxiv_id", "?") for c in chunks]
-        answer = generator.generate(question, chunks)
-        latency_ms = (time.monotonic() - started) * 1000
-
-        row = _score_row(item, retrieved_ids, answer, top_k)
-        row["latency_ms"] = latency_ms
-        if judge is not None:
-            row.update(judge(question, chunks, answer))
+        if generator is None:
+            row = _score_retrieval_row(item, retrieved_ids, top_k)
+        else:
+            answer = generator.generate(question, chunks)
+            row = _score_row(item, retrieved_ids, answer, top_k)
+            if judge is not None:
+                row.update(judge(question, chunks, answer))
+        row["latency_ms"] = (time.monotonic() - started) * 1000
         rows.append(row)
     return _aggregate(rows)
 
 
-def _print_report(results: dict[str, Any]) -> None:
+def _print_report(results: dict[str, Any], retrieval_only: bool = False) -> None:
     print(f"n:                  {results['n']}")
     print(f"hit@5 (answerable): {results['hit_at_5']:.2f}")
-    print(f"citation_accuracy:  {results['citation_accuracy']:.2f}")
-    print(f"citation_grounding: {results['citation_grounding']:.2f}")
-    print(f"false_refusal_rate: {results['false_refusal_rate']:.2f}")
+    if retrieval_only:
+        print("(retrieval-only run: generation metrics skipped)")
+    else:
+        print(f"citation_accuracy:  {results['citation_accuracy']:.2f}")
+        print(f"citation_grounding: {results['citation_grounding']:.2f}")
+        print(f"false_refusal_rate: {results['false_refusal_rate']:.2f}")
     print(f"avg_latency_ms:     {results['avg_latency_ms']:.0f}")
     for cat, stats in results["by_category"].items():
         parts = [f"n={stats['n']}"]
@@ -127,7 +145,14 @@ def main() -> int:
         action="store_true",
         help="also run LLM-as-judge faithfulness scoring (extra API calls)",
     )
+    parser.add_argument(
+        "--retrieval-only",
+        action="store_true",
+        help="skip generation entirely (no API calls); hit metrics only",
+    )
     args = parser.parse_args()
+    if args.judge and args.retrieval_only:
+        parser.error("--judge requires generation; drop --retrieval-only")
 
     from app.api.deps import get_generator, get_retriever
     from app.config import get_settings
@@ -143,10 +168,14 @@ def main() -> int:
 
         judge = make_judge(Anthropic(api_key=settings.anthropic_api_key))
 
-    results = evaluate(golden, get_retriever(), get_generator(), judge=judge)
-    _print_report(results)
+    generator = None if args.retrieval_only else get_generator()
+    results = evaluate(golden, get_retriever(), generator, judge=judge)
+    _print_report(results, retrieval_only=args.retrieval_only)
 
     out = Path(settings.eval_results_path)
+    if args.retrieval_only:
+        # Don't clobber the canonical results the dashboard reads.
+        out = out.with_name(out.stem + "_retrieval_only" + out.suffix)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(results, indent=2))
     print(f"\nWrote {out}")

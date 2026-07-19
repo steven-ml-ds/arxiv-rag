@@ -129,6 +129,30 @@ def test_evaluate_scores_by_category():
     assert res["false_refusal_rate"] == 0.0
 
 
+def test_evaluate_retrieval_only_skips_generation():
+    golden = [
+        {"question": "sh", "category": "single_hop", "expected_arxiv_ids": ["A"]},
+        {"question": "mh", "category": "multi_hop", "expected_arxiv_ids": ["A", "B"]},
+        {"question": "un", "category": "unanswerable", "expected_arxiv_ids": []},
+    ]
+    retriever = MagicMock()
+    retriever.retrieve.side_effect = [
+        [_chunk("A")],
+        [_chunk("A"), _chunk("B")],
+        [_chunk("X")],
+    ]
+
+    res = evaluate(golden, retriever, generator=None, top_k=5)
+
+    assert res["hit_at_5"] == 1.0
+    assert res["by_category"]["multi_hop"]["hit_at_5"] == 1.0
+    # No generation → no citation/refusal metrics anywhere, not even as 0.00.
+    assert all("citation_accuracy" not in r for r in res["rows"])
+    assert "refusal_accuracy" not in res["by_category"]["unanswerable"]
+    assert "citation_accuracy" not in res["by_category"]["single_hop"]
+    assert res["by_category"]["unanswerable"]["n"] == 1
+
+
 def test_evaluate_merges_judge_output():
     golden = [{"question": "q", "category": "single_hop", "expected_arxiv_ids": ["A"]}]
     retriever = MagicMock()
